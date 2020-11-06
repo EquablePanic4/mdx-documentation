@@ -7,4 +7,6 @@
     <cmdx type="preline" pattern="h4...h4" match="####" css="cmdx" />
     <cmdx type="preline" pattern="h5...h5" match="#####" css="cmdx" />
     <cmdx type="preline" pattern="h6...h6" match="######" css="cmdx" />
+    <cmdx type="preline" pattern="img alt{0} src{1} cmdx-size{2}" match="[!]" css="cmdx" />
+    <cmdx type="preline" pattern="ul...li...ul" match="*" css="cmdx" />
 </definitions>

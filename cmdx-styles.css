@@ -1,0 +1,11 @@
+img.cmdx[cmdx-size=large], img.cmdx[cmdx-size=big] {
+    width: 90%;
+}
+
+img.cmdx[cmdx-size="medium"], img.cmdx[cmdx-size="normal"], img.cmdx {
+    width: 50%;
+}
+
+img.cmdx[cmdx-size=small], img.cmdx[cmdx-size=little] {
+    width: 20%;
+}
