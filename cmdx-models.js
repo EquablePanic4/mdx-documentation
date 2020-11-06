@@ -1,9 +1,18 @@
 class CmdxDefinition {
-    constructor(_type, _pattern, _match, _css) {
+    constructor(_type, _pattern, _match, _css, _id) {
         this.type = CmdxType[_type];
         this.pattern = _pattern;
         this.match = _match;
         this.css = _css;
+        this.id = _id;
+        if (_pattern.split("...").length == 2)
+            this.patternType = CmdxPatternType.multi;
+        else {
+            if (_pattern.split("...").length == 3)
+                this.patternType = CmdxPatternType.overflowed;
+            else
+                this.patternType = CmdxPatternType.single;
+        }
     }
     parseUsingDefinition(line) {
         let ocpArr = this.pattern.split('...');
@@ -14,7 +23,8 @@ class CmdxDefinition {
         }
         else {
             if (ocpArr.length == 3) {
-                return "";
+                let markup = ocpArr[1];
+                return `<${markup}>${line}</${markup}>`;
             }
             else {
                 let objectResolved = new OrderedCmdx(this, line);
@@ -35,6 +45,36 @@ class CmdxDefinition {
     getSingleTagMarkup() {
         let arr = this.pattern.split(" ");
         return arr[0];
+    }
+    overflowWithMarkup(arr) {
+        if (this.patternType == CmdxPatternType.overflowed) {
+            let markup = this.pattern.split("...")[0];
+            let str = `<${markup}`;
+            if (this.css != null)
+                str += ` class="${this.css}">`;
+            else
+                str += ">";
+            for (let i = 0; i < arr.length; i++)
+                str += arr[i].render();
+            str += `</${markup}>`;
+            return str;
+        }
+        return "";
+    }
+}
+class CmdxObject {
+    constructor(_definition, _directive) {
+        this.definition = _definition;
+        let inlineDefinitions = definitions.filter(e => e.type == CmdxType.alias);
+        for (let i = 0; i < inlineDefinitions.length; i++) {
+            if (_directive.includes(inlineDefinitions[i].match)) {
+                _directive = _directive.replace(inlineDefinitions[i].match, `<${inlineDefinitions[i].pattern}>`);
+            }
+        }
+        this.directive = _directive;
+    }
+    render() {
+        return this.definition.parseUsingDefinition(this.directive);
     }
 }
 class AttribResolver {
@@ -109,6 +149,12 @@ class DictionaryObject {
 var CmdxType;
 (function (CmdxType) {
     CmdxType[CmdxType["preline"] = 0] = "preline";
-    CmdxType[CmdxType["inline"] = 1] = "inline";
+    CmdxType[CmdxType["alias"] = 1] = "alias";
 })(CmdxType || (CmdxType = {}));
+var CmdxPatternType;
+(function (CmdxPatternType) {
+    CmdxPatternType[CmdxPatternType["overflowed"] = 0] = "overflowed";
+    CmdxPatternType[CmdxPatternType["single"] = 1] = "single";
+    CmdxPatternType[CmdxPatternType["multi"] = 2] = "multi";
+})(CmdxPatternType || (CmdxPatternType = {}));
 //# sourceMappingURL=cmdx-models.js.map

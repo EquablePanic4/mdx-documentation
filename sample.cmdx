@@ -6,8 +6,26 @@
 ###### Nooo... najmniejszy nagłówek
    
 Lubię colę
-[!] [Logo Codli](https://i.imgur.com/bcJppoK.png){large}
-[!] [Logo Codli](https://i.imgur.com/bcJppoK.png){medium}
-[!] [Logo Codli](https://i.imgur.com/bcJppoK.png){small}
-[!] [Logo Codli](https://i.imgur.com/bcJppoK.png)
-[!] [Logo Codli](https://i.imgur.com/bcJppoK.png)
+! [Logo Codli](https://i.imgur.com/bcJppoK.png){large}
+! [Logo Codli](https://i.imgur.com/bcJppoK.png){medium}
+! [Logo Codli](https://i.imgur.com/bcJppoK.png){small}
+! [Logo Codli](https://i.imgur.com/bcJppoK.png)
+! [Logo Codli](https://i.imgur.com/bcJppoK.png)
+
+A to jest tekst, w którym znajduje się <strong>pogrubienie</strong> o dziwo!
+A tu jest pogrubienie [s]moje[.s]!
+
+* element listy
+* element listy
+* element listy
+
+- lista numerowana
+- lista numerowana
+- lista numerowana
+
+kolejny li
+* element listy
+
+* element listy
+
+* element listy

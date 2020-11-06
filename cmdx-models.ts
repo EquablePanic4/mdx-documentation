@@ -3,12 +3,25 @@ class CmdxDefinition {
     pattern : string;
     match : string;
     css : string;
+    id : number;
+    patternType : CmdxPatternType;
 
-    constructor(_type : string, _pattern : string, _match : string, _css : string) {
+    constructor(_type : string, _pattern : string, _match : string, _css : string, _id : number) {
         this.type = CmdxType[_type];
         this.pattern = _pattern;
         this.match = _match;
         this.css = _css;
+        this.id = _id;
+
+        //Sprawdzamy typ wzorca
+        if (_pattern.split("...").length == 2)
+            this.patternType = CmdxPatternType.multi;
+        else {
+            if (_pattern.split("...").length == 3)
+                this.patternType = CmdxPatternType.overflowed;
+            else
+                this.patternType = CmdxPatternType.single;
+        }
     }
 
     parseUsingDefinition(line : string) {
@@ -22,8 +35,9 @@ class CmdxDefinition {
 
         else {
             if (ocpArr.length == 3) {
-                //Mamy pattern ul...li...ul
-                return "";
+                //Mamy pattern ul...li...ul - więc opakowujemy w li
+                let markup = ocpArr[1]; // <-- Środkowy znacznik
+                return `<${markup}>${line}</${markup}>`;                
             }
 
             else {
@@ -52,6 +66,49 @@ class CmdxDefinition {
     getSingleTagMarkup() : string {
         let arr = this.pattern.split(" ");
         return arr[0];
+    }
+
+    overflowWithMarkup(arr : Array<CmdxObject>) : string {
+        if (this.patternType == CmdxPatternType.overflowed) {
+            let markup = this.pattern.split("...")[0];
+            let str = `<${markup}`;
+
+            if (this.css != null)
+                str += ` class="${this.css}">`;
+            else
+                str += ">";
+
+            for (let i = 0; i < arr.length; i++)
+                str += arr[i].render();
+
+            str += `</${markup}>`;
+            return str;
+        }
+
+        return "";
+    }
+}
+
+class CmdxObject {
+    definition : CmdxDefinition;
+    directive : string;
+
+    constructor(_definition : CmdxDefinition, _directive : string) {
+        this.definition = _definition;
+
+        //Od razu renderujemy wszystkie elementy wewnątrz liniowe
+        let inlineDefinitions = definitions.filter(e => e.type == CmdxType.alias);
+        for (let i = 0; i < inlineDefinitions.length; i++) {
+            if (_directive.includes(inlineDefinitions[i].match)) {
+                _directive = _directive.replace(inlineDefinitions[i].match, `<${inlineDefinitions[i].pattern}>`);
+            }
+        }
+
+        this.directive = _directive;
+    }
+
+    render() : string {
+        return this.definition.parseUsingDefinition(this.directive);
     }
 }
 
@@ -168,5 +225,11 @@ class DictionaryObject {
 
 enum CmdxType {
     preline,
-    inline
+    alias
+}
+
+enum CmdxPatternType {
+    overflowed, //np ul...li...ul
+    single, //np img alt src
+    multi //np h1...h1
 }

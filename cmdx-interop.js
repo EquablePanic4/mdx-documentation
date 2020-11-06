@@ -24,21 +24,39 @@ const cmdxInitializer = () => {
 const loadCmdx = (elem) => {
     fetch(elem.getAttribute('cmdx-source'))
         .then(response => response.text()).then(data => {
-        let elements = generateCmdxStringComponentArray(data);
-        elem.innerHTML = elements.join("");
+        let elements = generateCmdxComponentArray(data);
+        let rendered = new Array();
+        let i = 0;
+        while (i < elements.length) {
+            if (elements[i].definition.patternType == CmdxPatternType.overflowed) {
+                let toOverflow = new Array();
+                let def = elements[i].definition;
+                toOverflow.push(elements[i]);
+                i++;
+                while (i < elements.length && elements[i].definition.id == toOverflow[toOverflow.length - 1].definition.id) {
+                    toOverflow.push(elements[i]);
+                    i++;
+                }
+                rendered.push(def.overflowWithMarkup(toOverflow));
+                continue;
+            }
+            rendered.push(elements[i].render());
+            i++;
+        }
+        elem.innerHTML = rendered.join("");
     });
 };
-const generateCmdxStringComponent = (line) => {
+const generateCmdxComponent = (line) => {
     if (line) {
         let arr = line.split(' ');
-        let cmdxDef = definitions.filter(e => e.match == arr[0])[0];
+        let cmdxDef = definitions.filter(e => e.match == arr[0] && e.type == CmdxType.preline)[0];
         if (cmdxDef != null && cmdxDef != undefined) {
-            return cmdxDef.parseUsingDefinition(arrNoSelectorString(arr));
+            return new CmdxObject(cmdxDef, arrNoSelectorString(arr));
         }
         else {
             if (!isStringEmpty(line)) {
-                cmdxDef = definitions.filter(e => e.match == "all")[0];
-                return cmdxDef.parseUsingDefinition(line);
+                cmdxDef = definitions.filter(e => e.match == "all" && e.type == CmdxType.preline)[0];
+                return new CmdxObject(cmdxDef, line);
             }
         }
     }
@@ -49,16 +67,19 @@ const loadXmlDefinitions = (location) => __awaiter(this, void 0, void 0, functio
         let xml = parser.parseFromString(e, "text/xml");
         let arr = xml.getElementsByTagName("cmdx");
         for (let i = 0; i < arr.length; i++) {
-            definitions.push(new CmdxDefinition(arr[i].getAttribute("type"), arr[i].getAttribute("pattern"), arr[i].getAttribute("match"), arr[i].getAttribute("css")));
+            definitions.push(new CmdxDefinition(arr[i].getAttribute("type"), arr[i].getAttribute("pattern"), arr[i].getAttribute("match"), arr[i].getAttribute("css"), i));
         }
     });
 });
-const generateCmdxStringComponentArray = (cmdxText) => {
+const generateCmdxComponentArray = (cmdxText) => {
     let arr = cmdxText.split('\n');
-    let arrStrComponents = new Array();
-    for (let i = 0; i < arr.length; i++)
-        arrStrComponents.push(generateCmdxStringComponent(arr[i]));
-    return arrStrComponents;
+    let arrComponents = new Array();
+    for (let i = 0; i < arr.length; i++) {
+        let component = generateCmdxComponent(arr[i]);
+        if (component != null)
+            arrComponents.push(component);
+    }
+    return arrComponents;
 };
 const arrNoSelectorString = (arr) => {
     let str = "";
