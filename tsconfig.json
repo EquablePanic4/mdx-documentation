@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "sourceMap": true,
+      "removeComments": true,
+      "preserveConstEnums": true
+    },
+
+    "files": [
+        "cmdx-interop.ts",
+        "cmdx-models.ts"
+    ]
+  }

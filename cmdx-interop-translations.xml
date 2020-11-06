@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions>
+    <cmdx type="preline" pattern="p...p" match="all" />
+    <cmdx type="preline" pattern="h1...h1" match="#" css="cmdx" />
+    <cmdx type="preline" pattern="h2...h2" match="##" css="cmdx" />
+    <cmdx type="preline" pattern="h3...h3" match="###" css="cmdx" />
+    <cmdx type="preline" pattern="h4...h4" match="####" css="cmdx" />
+    <cmdx type="preline" pattern="h5...h5" match="#####" css="cmdx" />
+    <cmdx type="preline" pattern="h6...h6" match="######" css="cmdx" />
+</definitions>
